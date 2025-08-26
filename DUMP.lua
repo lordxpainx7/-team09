@@ -80,8 +80,8 @@ local function updateInput(input)
 end
 
 mainButton.InputBegan:Connect(function(input)
-    print("ScriptHUB: Botão principal clicado!")
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    print("ScriptHUB: Toque detectado no botão!")
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragToggle = true
         dragStart = input.Position
         startPos = mainButton.Position
@@ -89,13 +89,16 @@ mainButton.InputBegan:Connect(function(input)
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragToggle = false
+                print("ScriptHUB: Toque liberado. Abrindo menu...")
+                mainFrame.Visible = not mainFrame.Visible
+                print("ScriptHUB: Menu estado: " .. tostring(mainFrame.Visible))
             end
         end)
     end
 end)
 
 mainButton.InputChanged:Connect(function(input)
-    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragToggle then
+    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) and dragToggle then
         updateInput(input)
     end
 end)
@@ -588,17 +591,6 @@ miscButtonMenu.MouseButton1Click:Connect(function()
     showTab("Misc")
 end)
 
--- Abrir/fechar menu
-mainButton.MouseButton1Click:Connect(function()
-    print("ScriptHUB: Tentando abrir/fechar menu. Estado atual: " .. tostring(mainFrame.Visible))
-    mainFrame.Visible = not mainFrame.Visible
-    if mainFrame.Visible then
-        print("ScriptHUB: Menu aberto!")
-    else
-        print("ScriptHUB: Menu fechado!")
-    end
-end)
-
 closeButton.MouseButton1Click:Connect(function()
     print("ScriptHUB: Fechando menu!")
     mainFrame.Visible = false
@@ -784,7 +776,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- AimSilent (simplificado)
+-- AimSilent
 local oldNamecall
 oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
     if aimSilentToggle and getnamecallmethod() == "Raycast" then
